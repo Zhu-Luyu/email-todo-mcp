@@ -1,0 +1,18 @@
+[project]
+name = "email-todo-mcp"
+version = "0.1.0"
+description = "MCP server for extracting todos from emails"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "mcp>=0.1.0",
+    "imap-tools>=0.50.0",
+    "openai>=1.0.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project.scripts]
+email-todo-mcp = "src.server:main"
