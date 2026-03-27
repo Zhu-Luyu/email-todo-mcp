@@ -48,5 +48,7 @@ def load_config(config_path: str | None = None) -> dict:
     # Set defaults for optional fields
     config.setdefault("imap_port", 993)
     config.setdefault("llm_api_key", None)
+    config.setdefault("llm_api_base", None)
+    config.setdefault("llm_model", None)
 
     return config

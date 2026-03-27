@@ -110,7 +110,11 @@ async def _fetch_todos(arguments: dict, config: dict) -> list[TextContent]:
         )]
 
     # Extract todos
-    extractor = TodoExtractor(api_key=config.get("llm_api_key"))
+    extractor = TodoExtractor(
+        api_key=config.get("llm_api_key"),
+        api_base=config.get("llm_api_base"),
+        model=config.get("llm_model")
+    )
     result = extractor.extract_from_emails(emails)
 
     # Format output

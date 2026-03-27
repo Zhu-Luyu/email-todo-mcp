@@ -19,3 +19,6 @@ packages = ["src"]
 
 [project.scripts]
 email-todo-mcp = "src.server:main"
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"

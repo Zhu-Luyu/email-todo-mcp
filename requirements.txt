@@ -1,6 +1,7 @@
 mcp>=0.1.0
 imap-tools>=0.50.0
 openai>=1.0.0
+requests>=2.31.0
 pytest>=7.0.0
 pytest-asyncio>=0.21.0
 pytest-mock>=0.6.0
