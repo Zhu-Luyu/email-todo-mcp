@@ -40,3 +40,8 @@ htmlcov/
 # OS
 .DS_Store
 Thumbs.db
+
+# Temporary/debug scripts
+diagnose_*.py
+test_*.py
+!tests/test_*.py
