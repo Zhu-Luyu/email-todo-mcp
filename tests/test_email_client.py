@@ -2,7 +2,6 @@
 import pytest
 from datetime import datetime, timedelta
 from src.email_client import EmailClient, EmailClientError
-from src.config import ConfigError
 
 
 class TestEmailClient:
