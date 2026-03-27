@@ -1,7 +1,9 @@
 # src/email_client.py
 from datetime import datetime, timedelta
 from email.header import decode_header
-from imap_tools import MailBox
+import imaplib
+import email
+from email.message import Message
 
 
 class EmailClientError(Exception):
@@ -42,29 +44,84 @@ class EmailClient:
         since_date = datetime.now() - timedelta(days=days_ago)
 
         try:
-            mailbox = MailBox(self.server)
-            mailbox.login(self.email, self.password)
+            # Connect to IMAP server over SSL
+            mail = imaplib.IMAP4_SSL(self.server, self.port)
+
+            # Login
+            mail.login(self.email, self.password)
+
             # Select INBOX
-            mailbox.select("INBOX")
+            status, data = mail.select("INBOX")
+            if status != "OK":
+                mail.close()
+                mail.logout()
+                raise EmailClientError(f"Failed to select INBOX: {data}")
 
             # Search for emails since date
-            criteria = f"SINCE {since_date.strftime('%d-%b-%Y')}"
-            msg_ids = mailbox.search(criteria)
+            criteria = f'(SINCE "{since_date.strftime("%d-%b-%Y")}")'
+            status, messages = mail.search(None, criteria)
 
-            if not msg_ids:
-                mailbox.logout()
+            if status != "OK" or not messages[0]:
+                mail.close()
+                mail.logout()
                 return []
 
-            # Fetch emails (respect max_emails limit)
-            for msg in mailbox.fetch(msg_ids[:max_emails], mark_seen=False):
-                emails.append({
-                    "subject": self._decode_header(msg.subject),
-                    "from": msg.from_,
-                    "date": msg.date_str,
-                    "body": msg.text or msg.html or "",
-                })
+            # Get message IDs
+            msg_ids = messages[0].split()
 
-            mailbox.logout()
+            # Limit to max_emails
+            msg_ids = msg_ids[-max_emails:]  # Get most recent
+
+            # Fetch each email
+            for msg_id in msg_ids:
+                # Fetch the email body
+                status, msg_data = mail.fetch(msg_id, '(RFC822)')
+
+                if status == "OK":
+                    # Parse the email
+                    raw_email = msg_data[0][1]
+                    msg = email.message_from_bytes(raw_email)
+
+                    # Extract email data
+                    email_subject = msg.get("Subject", "")
+                    email_subject = self._decode_header(email_subject)
+
+                    email_from = msg.get("From", "")
+                    email_date = msg.get("Date", "")
+
+                    # Extract body
+                    email_body = ""
+                    if msg.is_multipart():
+                        for part in msg.walk():
+                            content_type = part.get_content_type()
+                            content_disposition = str(part.get("Content-Disposition", ""))
+
+                            if content_type == "text/plain" and "attachment" not in content_disposition:
+                                try:
+                                    email_body = part.get_payload(decode=True)
+                                    if isinstance(email_body, bytes):
+                                        email_body = email_body.decode('utf-8', errors='ignore')
+                                except:
+                                    pass
+                                break
+                    else:
+                        try:
+                            email_body = msg.get_payload(decode=True)
+                            if isinstance(email_body, bytes):
+                                email_body = email_body.decode('utf-8', errors='ignore')
+                        except:
+                            email_body = str(msg.get_payload())
+
+                    emails.append({
+                        "subject": email_subject,
+                        "from": email_from,
+                        "date": email_date,
+                        "body": email_body[:5000],  # Limit body size
+                    })
+
+            # Close connection
+            mail.close()
+            mail.logout()
 
         except Exception as e:
             raise EmailClientError(f"Failed to connect or fetch emails: {e}")
