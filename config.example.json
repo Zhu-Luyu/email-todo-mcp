@@ -1,0 +1,7 @@
+{
+  "imap_server": "imap.gmail.com",
+  "imap_port": 993,
+  "email": "your-email@example.com",
+  "password": "app-specific-password",
+  "llm_api_key": "optional-external-llm-key"
+}
