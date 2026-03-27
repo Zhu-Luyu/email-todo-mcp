@@ -4,13 +4,13 @@ A Model Context Protocol (MCP) server that reads emails from an IMAP mailbox and
 
 ## Features
 
-- **IMAP Email Integration**: Connects to any IMAP email server (Gmail, Outlook, Yahoo, etc.)
+- **IMAP Email Integration**: Connects to any IMAP email server (QQ Mail verified, others may work)
 - **Intelligent Todo Extraction**: Uses Claude AI to extract and categorize action items from emails
 - **Batch Processing**: Processes multiple emails efficiently
 - **Full-text Search**: Search emails by sender, subject, date range, and content
 - **Secure Authentication**: Supports app-specific passwords and OAuth tokens
 - **Flexible Querying**: Filter emails by read/unread status, date ranges, and more
-- **MCP Compliant**: Fully compatible with Claude Desktop and other MCP clients
+- **MCP Compliant**: Fully compatible with Claude Code and other MCP clients
 
 ## Installation
 
@@ -84,26 +84,19 @@ Edit `config.json` with your email credentials:
 
 ### Email-Specific Setup
 
-#### Gmail
+#### QQ Mail (Verified)
 
-1. Enable 2-Factor Authentication
-2. Generate an App-Specific Password:
-   - Go to Google Account > Security
-   - Select "App passwords"
-   - Generate a new password for "Mail"
-3. Use the app password in `config.json`
-
-#### Outlook/Office 365
-
-1. IMAP server: `outlook.office365.com`
+1. IMAP server: `imap.qq.com`
 2. Port: `993`
-3. Use your Microsoft account password or app password
+3. Generate an authorization code in QQ Mail settings:
+   - Go to QQ Mail > Settings > Account
+   - Enable IMAP/SMTP service
+   - Generate an authorization code
+4. Use the authorization code as password in `config.json`
 
-#### Yahoo Mail
+#### Other Email Providers
 
-1. IMAP server: `imap.mail.yahoo.com`
-2. Port: `993`
-3. Generate an app password in Yahoo Account Security
+Other IMAP-compatible email providers may work, but have not been verified. Try at your own risk.
 
 ### Security Note
 
@@ -111,52 +104,26 @@ Edit `config.json` with your email credentials:
 
 The `.gitignore` file is configured to exclude `config.json` by default.
 
-## Setup with Claude Desktop
+## Setup with Claude Code
 
-### macOS
+1. Open Claude Code in your project directory
+2. Claude Code will automatically detect the MCP server
 
-1. Open Claude Desktop
-2. Go to **Settings** > **Developer**
-3. Edit the MCP servers configuration file:
-   - Location: `~/Library/Application Support/Claude/claude_desktop_config.json`
-4. Add the following configuration:
+Alternatively, you can manually configure it in your Claude Code settings:
 
 ```json
 {
   "mcpServers": {
     "email-todo": {
-      "command": "/Users/torian/Base/Projects/email-todo-mcp/venv/bin/python",
-      "args": ["/Users/torian/Base/Projects/email-todo-mcp/src/server.py"],
-      "cwd": "/Users/torian/Base/Projects/email-todo-mcp"
+      "command": "/path/to/your/venv/bin/python",
+      "args": ["/path/to/your/email-todo-mcp/src/server.py"],
+      "cwd": "/path/to/your/email-todo-mcp"
     }
   }
 }
 ```
 
-### Windows
-
-1. Open Claude Desktop
-2. Go to **Settings** > **Developer**
-3. Edit the MCP servers configuration file:
-   - Location: `%APPDATA%\Claude\claude_desktop_config.json`
-4. Add the following configuration:
-
-```json
-{
-  "mcpServers": {
-    "email-todo": {
-      "command": "python",
-      "args": ["C:\\path\\to\\email-todo-mcp\\src\\server.py"],
-      "cwd": "C:\\path\\to\\email-todo-mcp",
-      "env": {
-        "PYTHONPATH": "C:\\path\\to\\email-todo-mcp"
-      }
-    }
-  }
-}
-```
-
-5. Restart Claude Desktop
+Replace `/path/to/your/` with your actual project path.
 
 ## Usage Examples
 
@@ -272,7 +239,7 @@ email-todo-mcp/
 
 ```
 ┌─────────────────┐
-│  Claude Desktop │
+│   Claude Code   │
 └────────┬────────┘
          │ MCP Protocol
          ▼
@@ -287,7 +254,7 @@ email-todo-mcp/
          ▼              ▼              ▼
 ┌─────────────┐  ┌──────────────┐  ┌───────────┐
 │ EmailClient │  │ TodoExtractor│  │  Config   │
-│  (IMAP)     │  │  (Claude AI) │  │ Manager   │
+│  (IMAP)     │  │  (LLM API)  │  │ Manager   │
 └─────────────┘  └──────────────┘  └───────────┘
      │
      ▼
@@ -378,4 +345,4 @@ MIT License - see LICENSE file for details
 ## Acknowledgments
 
 - Built with [MCP SDK](https://github.com/modelcontextprotocol/python-sdk)
-- Powered by [Anthropic Claude](https://www.anthropic.com/claude)
+- Powered by LLM API for intelligent todo extraction
