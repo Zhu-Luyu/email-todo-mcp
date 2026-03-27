@@ -1,9 +1,9 @@
 {
-  "imap_server": "imap.gmail.com",
+  "imap_server": "imap.qq.com",
   "imap_port": 993,
-  "email": "your-email@example.com",
-  "password": "app-specific-password",
-  "llm_api_key": "your-siliconflow-api-key",
-  "llm_api_base": "https://api.siliconflow.cn/v1",
-  "llm_model": "deepseek-ai/DeepSeek-R1"
+  "email": "your-email@qq.com",
+  "password": "your-authorization-code",
+  "llm_api_key": "your-llm-api-key",
+  "llm_api_base": "https://api.example.com/v1",
+  "llm_model": "model-name"
 }
